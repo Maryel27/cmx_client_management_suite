@@ -121,16 +121,18 @@ const ClientSuiteHeader = () => {
           >
             Client Escalations
           </Link>
-          <Link
-            to="/VOCS"
-            className={`transition-all ${
-              isActive("/VOCS")
-                ? "text-[#003b5c] font-semibold border-b-2 border-[#003b5c] scale-[1.05]"
-                : "text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300"
-            }`}
-          >
-            VOCS Management
-          </Link>
+          {localStorage.getItem("user_access_level") !== "User" && (
+            <Link
+              to="/VOCS"
+              className={`transition-all ${
+                isActive("/VOCS")
+                  ? "text-[#003b5c] font-semibold border-b-2 border-[#003b5c] scale-[1.05]"
+                  : "text-gray-700 hover:text-gray-900 hover:border-b-2 hover:border-gray-300"
+              }`}
+            >
+              VOCS Management
+            </Link>
+          )}
         </div>
       </nav>
     </header>
