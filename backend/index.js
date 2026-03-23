@@ -1153,14 +1153,19 @@ app.get("/clients", async (req, res) => {
 });
 
 app.post("/api/send-survey-email", async (req, res) => {
-  const { month, client, email, agentName } = req.body;
+  const { month, client, emailType, email, recipientName, agentName } =
+    req.body;
 
   try {
     console.log("Frontend URL:", process.env.SURVEY_FRONTEND_URL);
+
     const surveyLink = `${process.env.SURVEY_FRONTEND_URL}/company-survey?email=${email}&client=${client}&month=${month}`;
 
     console.log("📧 Sending survey email to:", email);
     console.log("🔗 Survey link generated:", surveyLink);
+
+    const greeting =
+      emailType === "individual" ? `Greetings, ${recipientName}` : `Greetings!`;
 
     const mailOptions = {
       from: '"Callmax Client Services" <noreply@callmaxsolutions.com>',
@@ -1168,32 +1173,21 @@ app.post("/api/send-survey-email", async (req, res) => {
       subject: `Callmax ${month} Performance Survey`,
       html: `
       <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:30px;">
-        
         <div style="max-width:600px;margin:auto;background:white;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
-
-          <!-- Header -->
           <div style="background:#003b5c;color:white;padding:20px;text-align:center;">
             <h2 style="margin:0;">Callmax Customer Experience Survey</h2>
           </div>
 
-          <!-- Body -->
           <div style="padding:30px;color:#333;line-height:1.6;">
+            <p><b>${greeting}</b></p>
 
-            <p>Hi <b>${client}</b>,</p>
-
-            <p>
-            We hope this message finds you well.
-            </p>
+            <p>We hope this message finds you well.</p>
 
             <p>
-            As part of our ongoing commitment to delivering excellent service, 
-            we would appreciate your feedback regarding the support provided by 
-            <b>${agentName}</b> for the month of <b>${month}</b>.
-            </p>
-
-            <p>
-            Your feedback helps us understand how we are performing and identify
-            opportunities to further improve the quality of our services.
+              As part of our ongoing commitment to delivering excellent service to 
+              <b>${client}</b>, we would truly appreciate your feedback on the support provided by 
+              <b>${agentName}</b> during the month of <b>${month}</b>.
+              Your feedback will help us better understand how we are performing and identify opportunities to further improve the quality of our services.
             </p>
 
             <div style="text-align:center;margin:35px 0;">
@@ -1212,22 +1206,17 @@ app.post("/api/send-survey-email", async (req, res) => {
               </a>
             </div>
 
-            <p>
-            The survey should only take a few minutes to complete.
-            </p>
+            <p>The survey should only take a few minutes to complete.</p>
 
             <p>
-            Thank you for taking the time to share your feedback and for your continued partnership with Callmax.
+              Thank you for taking the time to share your feedback and for your continued partnership with Callmax.
             </p>
-
           </div>
 
-          <!-- Footer -->
           <div style="background:#f1f5f9;padding:15px;text-align:center;font-size:12px;color:#666;">
             © ${new Date().getFullYear()} Callmax Solutions<br>
             Client Services Team
           </div>
-
         </div>
       </div>
       `,
@@ -1235,23 +1224,46 @@ app.post("/api/send-survey-email", async (req, res) => {
 
     await transporter.sendMail(mailOptions);
 
-    /* SAVE EMAIL REQUEST */
+    try {
+      const sql = `
+        INSERT INTO 1006_customer_survey_system.email_requests
+        (month, client, email_type, email, recipient_name, agent_name)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `;
 
-    const sql = `
-      INSERT INTO 1006_customer_survey_system.email_requests
-      (month, client, email, agent_name)
-      VALUES (?, ?, ?, ?)
-    `;
+      await db.execute(sql, [
+        month,
+        client,
+        emailType,
+        email,
+        recipientName || null,
+        agentName,
+      ]);
 
-    await db.execute(sql, [month, client, email, agentName]);
+      console.log("💾 Email request saved to database");
+    } catch (dbError) {
+      console.error("❌ Database save failed:", dbError);
 
-    console.log("💾 Email request saved to database");
+      return res.status(200).json({
+        success: true,
+        partialSuccess: true,
+        message:
+          "Email sent successfully, but failed to save the request to the database.",
+      });
+    }
+
     console.log("✅ Email sent successfully");
 
-    res.json({ message: "Survey email sent successfully!" });
+    return res.status(200).json({
+      success: true,
+      message: "Survey email sent successfully!",
+    });
   } catch (error) {
     console.error("❌ Email sending failed:", error);
-    res.status(500).json({ message: "Error sending email" });
+    return res.status(500).json({
+      success: false,
+      message: "Error sending email",
+    });
   }
 });
 

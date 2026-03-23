@@ -13,7 +13,9 @@ const VOCS = () => {
   const [emailForm, setEmailForm] = useState({
     month: "",
     client: "",
+    emailType: "", // 👈 ADD THIS
     email: "",
+    recipientName: "", // 👈 add this
     agentName: "",
   });
 
@@ -94,8 +96,14 @@ const VOCS = () => {
     const missing = [];
     if (!emailForm.month) missing.push("Month");
     if (!emailForm.client) missing.push("Client");
+    if (!emailForm.emailType) missing.push("Email Type");
     if (!emailForm.email) missing.push("Email");
     if (!emailForm.agentName) missing.push("Agent Name");
+
+    // ✅ Only require recipientName for individual
+    if (emailForm.emailType === "individual" && !emailForm.recipientName) {
+      missing.push("Recipient Name");
+    }
 
     if (missing.length) {
       setEmailError(`Please fill required fields: ${missing.join(", ")}`);
@@ -125,7 +133,9 @@ const VOCS = () => {
         setEmailForm({
           month: "",
           client: "",
+          emailType: "",
           email: "",
+          recipientName: "",
           agentName: "",
         });
       } else {
@@ -376,9 +386,11 @@ const VOCS = () => {
                         setEmailForm({
                           month: "",
                           client: "",
+                          emailType: "",
                           email: "",
+                          recipientName: "",
                           agentName: "",
-                        }); // ✅ reset form
+                        });
                       }
                     }}
                     className={`h-8 px-4 rounded-lg text-[11px] font-medium
@@ -423,7 +435,9 @@ const VOCS = () => {
                 >
                   {/* Month */}
                   <div>
-                    <label>Month</label>
+                    <label>
+                      Month <span className="text-red-500">*</span>
+                    </label>
                     <select
                       name="month"
                       value={emailForm.month}
@@ -468,9 +482,28 @@ const VOCS = () => {
                     </select>
                   </div>
 
+                  {/* Client */}
+                  <div>
+                    <label>
+                      Email Type <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                      name="emailType"
+                      value={emailForm.emailType}
+                      onChange={handleEmailChange}
+                      className="w-full border rounded px-2 py-1.5"
+                    >
+                      <option value="">Select</option>
+                      <option value="individual">Individual</option>
+                      <option value="distro">Distro</option>
+                    </select>
+                  </div>
+
                   {/* Email */}
                   <div>
-                    <label>Email</label>
+                    <label>
+                      Email <span className="text-red-500">*</span>
+                    </label>
                     <input
                       type="email"
                       name="email"
@@ -480,9 +513,26 @@ const VOCS = () => {
                     />
                   </div>
 
+                  {/* Recipient Name (ONLY for Individual) */}
+                  {emailForm.emailType === "individual" && (
+                    <div>
+                      <label>
+                        Recipient Name <span className="text-red-500">*</span>
+                      </label>
+                      <input
+                        name="recipientName"
+                        value={emailForm.recipientName || ""}
+                        onChange={handleEmailChange}
+                        className="w-full border rounded px-2 py-1.5"
+                      />
+                    </div>
+                  )}
+
                   {/* Agent Name */}
                   <div>
-                    <label>Agent Name</label>
+                    <label>
+                      Agent Name <span className="text-red-500">*</span>
+                    </label>
                     <input
                       name="agentName"
                       value={emailForm.agentName}
