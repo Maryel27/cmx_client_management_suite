@@ -4,12 +4,26 @@ import { SERVER_URL } from "../components/lib/constants";
 class UserService {
   static BASE_URL = SERVER_URL;
 
-  // Auth is true only after OTP success (manual) or confirmed Google login
+  // ✅ Auth check WITH 12-hour expiry
   static isAuthenticated() {
-    return (
-      !!localStorage.getItem("userId") &&
-      localStorage.getItem("sessionVerified") === "1"
-    );
+    const userId = localStorage.getItem("userId");
+    const sessionVerified = localStorage.getItem("sessionVerified");
+    const loginTime = localStorage.getItem("loginTime");
+
+    if (!userId || sessionVerified !== "1" || !loginTime) {
+      return false;
+    }
+
+    const now = new Date().getTime();
+    const twelveHours = 12 * 60 * 60 * 1000;
+
+    // ⛔ Expired session
+    if (now - Number(loginTime) > twelveHours) {
+      this.logout();
+      return false;
+    }
+
+    return true;
   }
 
   // ✅ Save pending user (before OTP verification)
@@ -61,6 +75,10 @@ class UserService {
 
     localStorage.setItem("sessionVerified", "1");
 
+    // ✅ ADD: Save login timestamp
+    const now = new Date().getTime();
+    localStorage.setItem("loginTime", now);
+
     this.clearPendingUser();
 
     return finalId;
@@ -87,6 +105,7 @@ class UserService {
   static logout() {
     localStorage.removeItem("userId");
     localStorage.removeItem("sessionVerified");
+    localStorage.removeItem("loginTime"); // ✅ IMPORTANT
 
     localStorage.removeItem("userEmail");
     localStorage.removeItem("userFirstname");
