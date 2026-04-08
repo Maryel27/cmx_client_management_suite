@@ -13,10 +13,11 @@ const VOCS = () => {
   const [emailForm, setEmailForm] = useState({
     month: "",
     client: "",
-    emailType: "", // 👈 ADD THIS
+    emailType: "",
     email: "",
-    recipientName: "", // 👈 add this
+    recipientName: "",
     agentName: "",
+    notes: "", // ✅ NEW
   });
 
   const [emailError, setEmailError] = useState("");
@@ -137,6 +138,7 @@ const VOCS = () => {
           email: "",
           recipientName: "",
           agentName: "",
+          notes: "", // ✅ NEW
         });
       } else {
         setEmailStatus("error");
@@ -537,6 +539,19 @@ const VOCS = () => {
                       name="agentName"
                       value={emailForm.agentName}
                       onChange={handleEmailChange}
+                      className="w-full border rounded px-2 py-1.5"
+                    />
+                  </div>
+
+                  {/* Notes */}
+                  <div>
+                    <label>Notes</label>
+                    <textarea
+                      name="notes"
+                      value={emailForm.notes}
+                      onChange={handleEmailChange}
+                      rows={3}
+                      placeholder="Enter any additional notes..."
                       className="w-full border rounded px-2 py-1.5"
                     />
                   </div>

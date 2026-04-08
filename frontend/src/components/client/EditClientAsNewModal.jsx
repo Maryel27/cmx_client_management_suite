@@ -81,6 +81,7 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
     notes: "", // 🔹 new note to be appended
     termDate: "",
     site: "",
+    workSetup: "", // ✅ NEW
   });
 
   const [saving, setSaving] = useState(false);
@@ -129,6 +130,7 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
         notes: "", // 🔹 new note starts blank
         termDate: toInputDate(client.TERMDATE),
         site: client.SITE || "",
+        workSetup: client.WORKSETUP || "",
       });
       setSaving(false);
       setSubmitStatus("idle");
@@ -434,14 +436,11 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
               </div>
             </div>
 
-            {/* Row: MSA / Live / Term Date */}
+            {/* Row: MSA / Live / Term Date / Site */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  MSA Date{" "}
-                  {requiredFields.includes("msaDate") && (
-                    <span className="text-red-500">*</span>
-                  )}
+                  MSA Date
                 </label>
                 <input
                   type="date"
@@ -451,12 +450,10 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                   className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
                 />
               </div>
+
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  Live Date{" "}
-                  {requiredFields.includes("liveDate") && (
-                    <span className="text-red-500">*</span>
-                  )}
+                  Live Date
                 </label>
                 <input
                   type="date"
@@ -466,12 +463,10 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                   className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
                 />
               </div>
+
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  Termination Date{" "}
-                  {requiredFields.includes("termDate") && (
-                    <span className="text-red-500">*</span>
-                  )}
+                  Termination Date
                 </label>
                 <input
                   type="date"
@@ -481,16 +476,11 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                   className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
                 />
               </div>
-            </div>
 
-            {/* Account / LOB / Task / Site */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              {/* ✅ SITE MOVED */}
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  Site{" "}
-                  {requiredFields.includes("site") && (
-                    <span className="text-red-500">*</span>
-                  )}
+                  Site
                 </label>
                 <select
                   name="site"
@@ -504,40 +494,59 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                   <option value="Blended">Blended</option>
                 </select>
               </div>
+            </div>
+
+            {/* Account / LOB / Task / Site */}
+            {/* Work Setup / Account / LOB / Task */}
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+              {/* ✅ NEW */}
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  Account <span className="text-red-500">*</span>
+                  Work Setup
                 </label>
+                <select
+                  name="workSetup"
+                  value={formData.workSetup}
+                  onChange={handleInputChange}
+                  className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs bg-white"
+                >
+                  <option value="">(Select)</option>
+                  <option value="Onsite">Onsite</option>
+                  <option value="Hybrid">Hybrid</option>
+                  <option value="WFH">WFH</option>
+                </select>
+              </div>
+
+              <div>
+                <label>Account *</label>
                 <input
                   type="text"
                   name="account"
                   value={formData.account}
                   onChange={handleInputChange}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
+                  className="mt-1 w-full border rounded px-2 py-1.5"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] font-medium text-gray-600">
-                  LOB <span className="text-red-500">*</span>
-                </label>
+                <label>LOB *</label>
                 <input
                   type="text"
                   name="lob"
                   value={formData.lob}
                   onChange={handleInputChange}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
+                  className="mt-1 w-full border rounded px-2 py-1.5"
                 />
               </div>
+
               <div>
-                <label className="block text-[11px] font-medium text-gray-600">
-                  Task <span className="text-red-500">*</span>
-                </label>
+                <label>Task *</label>
                 <input
                   type="text"
                   name="task"
                   value={formData.task}
                   onChange={handleInputChange}
-                  className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
+                  className="mt-1 w-full border rounded px-2 py-1.5"
                 />
               </div>
             </div>

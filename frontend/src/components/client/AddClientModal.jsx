@@ -37,6 +37,7 @@ const INITIAL_FORM_DATA = {
   notes: "",
   termDate: "",
   site: "",
+  workSetup: "", // ✅ NEW
 };
 
 const AddClientModal = ({ isOpen, onClose, onSave }) => {
@@ -115,6 +116,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
     e.preventDefault();
 
     const { isValid, missing } = validateRequired(formData);
+
     if (!isValid) {
       setSubmitStatus("error");
       setSubmitMessage(
@@ -245,7 +247,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
             </div>
           </div>
 
-          {/* Row: MSA / Live / Term Date */}
+          {/* Row: MSA / Live / Term Date / Site */}
           <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
@@ -259,6 +261,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
               />
             </div>
+
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 Live Date <span className="text-red-500">*</span>
@@ -271,6 +274,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
               />
             </div>
+
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 Termination Date
@@ -283,10 +287,8 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
               />
             </div>
-          </div>
 
-          {/* Account / LOB / Task / Site */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {/* ✅ MOVED SITE HERE */}
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 Site
@@ -303,6 +305,28 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 <option value="Blended">Blended</option>
               </select>
             </div>
+          </div>
+
+          {/* Work Setup / Account / LOB / Task */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
+            {/* ✅ NEW FIELD */}
+            <div>
+              <label className="block text-[11px] font-medium text-gray-600">
+                Work Setup
+              </label>
+              <select
+                name="workSetup"
+                value={formData.workSetup}
+                onChange={handleInputChange}
+                className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs bg-white"
+              >
+                <option value="">(Select)</option>
+                <option value="Onsite">Onsite</option>
+                <option value="Hybrid">Hybrid</option>
+                <option value="WFH">WFH</option>
+              </select>
+            </div>
+
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 Account <span className="text-red-500">*</span>
@@ -315,6 +339,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
               />
             </div>
+
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 LOB <span className="text-red-500">*</span>
@@ -327,6 +352,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
                 className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
               />
             </div>
+
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
                 Task <span className="text-red-500">*</span>

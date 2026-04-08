@@ -174,6 +174,7 @@ app.get("/api/client-roster", async (req, res) => {
         LIVE_DATE,
         STAFFINGMODEL,
         SITE,
+        WORKSETUP,
         DRFTE,
         PHFTE,
         DAILYWORKHRS,
@@ -211,6 +212,7 @@ app.get("/api/client-roster", async (req, res) => {
           LIVE_DATE,
           STAFFINGMODEL,
           SITE,
+          WORKSETUP,
           DRFTE,
           PHFTE,
           DAILYWORKHRS,
@@ -518,6 +520,7 @@ app.post("/api/client-roster", async (req, res) => {
       msaDate,
       liveDate,
       site,
+      workSetup, // ✅ NEW
       staffingModel,
       drfte,
       phfte,
@@ -575,6 +578,7 @@ app.post("/api/client-roster", async (req, res) => {
       safeMSA,
       safeLive,
       site,
+      workSetup, // ✅ NEW
       staffingModel,
       safeDRFTE,
       safePHFTE,
@@ -614,6 +618,7 @@ app.post("/api/client-roster", async (req, res) => {
         MSA_DATE,
         LIVE_DATE,
         SITE,
+        WORKSETUP, -- ✅ NEW
         STAFFINGMODEL,
         DRFTE,
         PHFTE,
@@ -639,7 +644,7 @@ app.post("/api/client-roster", async (req, res) => {
         SALESPERSON,
         NOTES,
         TERMDATE
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       values,
     );
 
@@ -665,6 +670,7 @@ app.post("/api/client-roster", async (req, res) => {
         MSA_DATE,
         LIVE_DATE,
         SITE,
+        WORKSETUP, -- ✅ NEW
         STAFFINGMODEL,
         DRFTE,
         PHFTE,
@@ -690,7 +696,7 @@ app.post("/api/client-roster", async (req, res) => {
         SALESPERSON,
         NOTES,
         TERMDATE
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         values,
       );
 
@@ -1153,7 +1159,7 @@ app.get("/clients", async (req, res) => {
 });
 
 app.post("/api/send-survey-email", async (req, res) => {
-  const { month, client, emailType, email, recipientName, agentName } =
+  const { month, client, emailType, email, recipientName, agentName, notes } =
     req.body;
 
   try {
@@ -1176,7 +1182,7 @@ app.post("/api/send-survey-email", async (req, res) => {
         <div style="max-width:600px;margin:auto;background:white;border-radius:8px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.1);">
           <div style="background:#003b5c;color:white;padding:20px;text-align:center;">
             <h2 style="margin:0;">Callmax Customer Experience Survey</h2>
-          </div>
+          </div> 
 
           <div style="padding:30px;color:#333;line-height:1.6;">
             <p><b>${greeting}</b></p>
@@ -1187,6 +1193,18 @@ app.post("/api/send-survey-email", async (req, res) => {
               As part of our ongoing commitment to delivering excellent service to 
               <b>${client}</b>, we would truly appreciate your feedback on the support provided by 
               <b>${agentName}</b> during the month of <b>${month}</b>.
+
+              ${
+                notes
+                  ? `
+                  <br/><br/>
+                  <b>Additional Notes:</b><br/>
+                  ${notes}
+                `
+                  : ""
+              }
+              <br>
+              <br>
               Your feedback will help us better understand how we are performing and identify opportunities to further improve the quality of our services.
             </p>
 
@@ -1227,8 +1245,8 @@ app.post("/api/send-survey-email", async (req, res) => {
     try {
       const sql = `
         INSERT INTO 1006_customer_survey_system.email_requests
-        (month, client, email_type, email, recipient_name, agent_name)
-        VALUES (?, ?, ?, ?, ?, ?)
+        (month, client, email_type, email, recipient_name, agent_name, notes)
+        VALUES (?, ?, ?, ?, ?, ?, ?)
       `;
 
       await db.execute(sql, [
@@ -1238,6 +1256,7 @@ app.post("/api/send-survey-email", async (req, res) => {
         email,
         recipientName || null,
         agentName,
+        notes,
       ]);
 
       console.log("💾 Email request saved to database");
