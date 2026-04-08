@@ -174,6 +174,7 @@ app.get("/api/client-roster", async (req, res) => {
         LIVE_DATE,
         STAFFINGMODEL,
         SITE,
+        WORKSETUP, -- ✅ ADDED
         WORKSETUP,
         DRFTE,
         PHFTE,
@@ -212,6 +213,7 @@ app.get("/api/client-roster", async (req, res) => {
           LIVE_DATE,
           STAFFINGMODEL,
           SITE,
+          WORKSETUP, -- ✅ ADDED
           WORKSETUP,
           DRFTE,
           PHFTE,
