@@ -383,7 +383,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
             </div>
             <div>
               <label className="block text-[11px] font-medium text-gray-600">
-                State
+                State / Country
               </label>
               <select
                 name="state"
@@ -393,6 +393,7 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
               >
                 <option value="">(Select)</option>
                 {[
+                  "CANADA",
                   "AL",
                   "AK",
                   "AZ",

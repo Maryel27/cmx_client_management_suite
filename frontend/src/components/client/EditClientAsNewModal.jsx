@@ -567,7 +567,7 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
               </div>
               <div>
                 <label className="block text-[11px] font-medium text-gray-600">
-                  State
+                  State / Country
                 </label>
                 <select
                   name="state"
@@ -577,6 +577,7 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                 >
                   <option value="">(Select)</option>
                   {[
+                    "CANADA",
                     "AL",
                     "AK",
                     "AZ",
