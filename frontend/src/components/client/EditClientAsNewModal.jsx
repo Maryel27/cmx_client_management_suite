@@ -79,9 +79,10 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
     salesperson: "In House",
     previousNotes: "", // 🔹 read-only original notes
     notes: "", // 🔹 new note to be appended
+    instructions: "",
     termDate: "",
     site: "",
-    workSetup: "", // ✅ NEW
+    workSetup: "",
   });
 
   const [saving, setSaving] = useState(false);
@@ -128,6 +129,7 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
         salesperson: client.SALESPERSON || "In House",
         previousNotes: client.NOTES || "", // 🔹 keep old notes
         notes: "", // 🔹 new note starts blank
+        instructions: client.INSTRUCTIONS || "",
         termDate: toInputDate(client.TERMDATE),
         site: client.SITE || "",
         workSetup: client.WORKSETUP || "",
@@ -1017,6 +1019,21 @@ const EditClientAsNewModal = ({ isOpen, onClose, onSave, client }) => {
                   placeholder="Type your new note here."
                 />
               </div>
+            </div>
+
+            {/* Instructions */}
+            <div>
+              <label className="block text-[11px] font-medium text-gray-600">
+                Special Instructions
+              </label>
+              <textarea
+                name="instructions"
+                rows={4}
+                value={formData.instructions || ""}
+                onChange={handleInputChange}
+                className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-[11px]"
+                placeholder="Enter special instructions here..."
+              />
             </div>
 
             {/* Footer buttons */}

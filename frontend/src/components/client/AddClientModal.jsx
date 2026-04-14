@@ -35,9 +35,10 @@ const INITIAL_FORM_DATA = {
   contactNo2: "",
   salesperson: "In House",
   notes: "",
+  instructions: "",
   termDate: "",
   site: "",
-  workSetup: "", // ✅ NEW
+  workSetup: "",
 };
 
 const AddClientModal = ({ isOpen, onClose, onSave }) => {
@@ -788,6 +789,20 @@ const AddClientModal = ({ isOpen, onClose, onSave }) => {
               name="notes"
               rows={4}
               value={formData.notes}
+              onChange={handleInputChange}
+              className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
+            />
+          </div>
+
+          {/* Instructions */}
+          <div>
+            <label className="block text-[11px] font-medium text-gray-600">
+              Special Instructions
+            </label>
+            <textarea
+              name="instructions"
+              rows={3}
+              value={formData.instructions || ""}
               onChange={handleInputChange}
               className="mt-1 w-full border border-gray-300 rounded-lg px-2 py-1.5 text-xs"
             />

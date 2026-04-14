@@ -198,6 +198,7 @@ app.get("/api/client-roster", async (req, res) => {
         CONTACTNO2,
         SALESPERSON,
         NOTES,
+        INSTRUCTIONS,
         TERMDATE
       FROM (
         SELECT
@@ -236,6 +237,7 @@ app.get("/api/client-roster", async (req, res) => {
           CONTACTNO2,
           SALESPERSON,
           NOTES,
+          INSTRUCTIONS,
           TERMDATE,
           ROW_NUMBER() OVER (
             PARTITION BY ACCOUNTCODE
@@ -300,212 +302,6 @@ const formatNoteEntry = (first, last, rawNote) => {
 ${rawNote || ""}`;
 };
 
-// ---------- INSERT NEW CLIENT PROFILE ----------
-// app.post("/api/client-roster", async (req, res) => {
-//   try {
-//     const {
-//       effectiveDate,
-//       accountCode,
-//       qbAccount,
-//       account,
-//       lob,
-//       task,
-//       msaDate,
-//       liveDate,
-//       site,
-//       staffingModel,
-//       drfte,
-//       phfte,
-//       dailyWorkHrs,
-//       holidayHrs,
-//       regularRate,
-//       premiumRate,
-//       depositFee,
-//       depositFeeWaived,
-//       setupFee,
-//       setupFeeWaived,
-//       extraMonitorFeePerUnit,
-//       extraMonitorQty,
-//       phoneLineFeePerFTEPerMonth,
-//       billingCycle,
-//       status,
-//       busAddress,
-//       state,
-//       contact1,
-//       contactNo1,
-//       contact2,
-//       contactNo2,
-//       salesperson,
-//       notes,
-//       termDate,
-//       // 👇 sent from frontend via localStorage
-//       userFirstName,
-//       userLastName,
-//     } = req.body;
-
-//     // ✅ Normalize dates (empty -> NULL)
-//     const safeEffective = normalizeDate(effectiveDate);
-//     const safeMSA = normalizeDate(msaDate);
-//     const safeLive = normalizeDate(liveDate);
-//     const safeTerm = normalizeDate(termDate);
-
-//     // ✅ Normalize numbers (empty / invalid -> NULL)
-//     const safeDRFTE = normalizeNumber(drfte);
-//     const safePHFTE = normalizeNumber(phfte);
-//     const safeDailyHrs = normalizeNumber(dailyWorkHrs);
-//     const safeHolidayHrs = normalizeNumber(holidayHrs);
-//     const safeRegular = normalizeNumber(regularRate);
-//     const safePremium = normalizeNumber(premiumRate);
-//     const safeDeposit = normalizeNumber(depositFee);
-//     const safeSetup = normalizeNumber(setupFee);
-//     const safeMonitorFee = normalizeNumber(extraMonitorFeePerUnit);
-//     const safeMonitorQty = normalizeNumber(extraMonitorQty);
-//     const safePhoneLine = normalizeNumber(phoneLineFeePerFTEPerMonth);
-
-//     // 📝 Format NOTES with signature + timestamp + actual content
-//     const formattedNotes = formatNoteEntry(
-//       userFirstName,
-//       userLastName,
-//       notes
-//     );
-
-//     // 🧾 Insert into main roster table
-//     const [result] = await db.execute(
-//       `INSERT INTO 1000_cmx_appdata_client_database.db_cmx_client_roster (
-//         EFFECTIVEDATE,
-//         ACCOUNTCODE,
-//         QBACCOUNT,
-//         ACCOUNT,
-//         LOB,
-//         TASK,
-//         MSA_DATE,
-//         LIVE_DATE,
-//         SITE,
-//         STAFFINGMODEL,
-//         DRFTE,
-//         PHFTE,
-//         DAILYWORKHRS,
-//         HOLIDAYHRS,
-//         REGULARRATE,
-//         PREMIUMRATE,
-//         DEPOSITFEE,
-//         DEPOSITFEEWAIVED,
-//         SETUPFEE,
-//         SETUPFEEWAIVED,
-//         EXTRAMONITORFEEPERUNIT,
-//         EXTRAMONITORQTY,
-//         PHONELINEFEEPERFTEPERMONTH,
-//         BILLINGCYCLE,
-//         STATUS,
-//         BUSADDRESS,
-//         STATE,
-//         CONTACT1,
-//         CONTACTNO1,
-//         CONTACT2,
-//         CONTACTNO2,
-//         SALESPERSON,
-//         NOTES,
-//         TERMDATE
-//       ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
-//       [
-//         safeEffective,
-//         accountCode,
-//         qbAccount,
-//         account,
-//         lob,
-//         task,
-//         safeMSA,
-//         safeLive,
-//         site,
-//         staffingModel,
-//         safeDRFTE,
-//         safePHFTE,
-//         safeDailyHrs,
-//         safeHolidayHrs,
-//         safeRegular,
-//         safePremium,
-//         safeDeposit,
-//         depositFeeWaived,
-//         safeSetup,
-//         setupFeeWaived,
-//         safeMonitorFee,
-//         safeMonitorQty,
-//         safePhoneLine,
-//         billingCycle,
-//         status,
-//         busAddress,
-//         state,
-//         contact1,
-//         contactNo1,
-//         contact2,
-//         contactNo2,
-//         salesperson,
-//         // 👇 use formatted notes here
-//         formattedNotes,
-//         safeTerm,
-//       ]
-//     );
-
-//     const insertedId = result.insertId;
-
-//     // 🔁 Read back inserted row in same shape as GET /api/client-roster
-//     const [rows] = await db.execute(
-//       `
-//       SELECT
-//         ID,
-//         EFFECTIVEDATE,
-//         ACCOUNTCODE,
-//         QBACCOUNT,
-//         ACCOUNT,
-//         LOB,
-//         TASK,
-//         MSA_DATE,
-//         LIVE_DATE,
-//         STAFFINGMODEL,
-//         SITE,
-//         DRFTE,
-//         PHFTE,
-//         DAILYWORKHRS,
-//         HOLIDAYHRS,
-//         REGULARRATE,
-//         PREMIUMRATE,
-//         DEPOSITFEE,
-//         DEPOSITFEEWAIVED,
-//         SETUPFEE,
-//         SETUPFEEWAIVED,
-//         EXTRAMONITORFEEPERUNIT,
-//         EXTRAMONITORQTY,
-//         PHONELINEFEEPERFTEPERMONTH,
-//         BILLINGCYCLE,
-//         STATUS,
-//         BUSADDRESS,
-//         STATE,
-//         CONTACT1,
-//         CONTACTNO1,
-//         CONTACT2,
-//         CONTACTNO2,
-//         SALESPERSON,
-//         NOTES,
-//         TERMDATE
-//       FROM 1000_cmx_appdata_client_database.db_cmx_client_roster
-//       WHERE ID = ?
-//       `,
-//       [insertedId]
-//     );
-
-//     return res.json({
-//       success: true,
-//       data: rows[0],
-//     });
-//   } catch (err) {
-//     console.error("Error inserting client:", err);
-//     return res.status(500).json({
-//       success: false,
-//       error: "Failed to save client.",
-//     });
-//   }
-// });
-
 const mysql = require("mysql2/promise"); // Needed to connect to Harmony
 
 app.post("/api/client-roster", async (req, res) => {
@@ -545,6 +341,7 @@ app.post("/api/client-roster", async (req, res) => {
       contactNo2,
       salesperson,
       notes,
+      instructions,
       termDate,
       userFirstName,
       userLastName,
@@ -578,7 +375,7 @@ app.post("/api/client-roster", async (req, res) => {
       safeMSA,
       safeLive,
       site,
-      workSetup, // ✅ NEW
+      workSetup,
       staffingModel,
       safeDRFTE,
       safePHFTE,
@@ -603,6 +400,7 @@ app.post("/api/client-roster", async (req, res) => {
       contactNo2,
       salesperson,
       formattedNotes,
+      instructions || null,
       safeTerm,
     ];
 
@@ -643,8 +441,9 @@ app.post("/api/client-roster", async (req, res) => {
         CONTACTNO2,
         SALESPERSON,
         NOTES,
+        INSTRUCTIONS,
         TERMDATE
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
       values,
     );
 
@@ -670,7 +469,7 @@ app.post("/api/client-roster", async (req, res) => {
         MSA_DATE,
         LIVE_DATE,
         SITE,
-        WORKSETUP, -- ✅ NEW
+        WORKSETUP, 
         STAFFINGMODEL,
         DRFTE,
         PHFTE,
@@ -695,8 +494,9 @@ app.post("/api/client-roster", async (req, res) => {
         CONTACTNO2,
         SALESPERSON,
         NOTES,
+        INSTRUCTIONS,
         TERMDATE
-      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
+      ) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
         values,
       );
 
